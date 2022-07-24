@@ -1,237 +1,218 @@
+<!--登录-->
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
+    <div class="login-box">
+      <div class="manage_tip">admin management</div>
+      <div class="avatar_box">
+        <img src="../../assets/auhor.jpg" alt />
       </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="Password"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-        </span>
-      </el-form-item>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
-    </el-form>
+      <el-form
+        ref="loginForm"
+        class="form-box"
+        :model="loginForm"
+        :rules="loginRules"
+        auto-complete="on"
+        label-position="left"
+      >
+        <el-form-item prop="telephone">
+          <div class="form-box-item">
+            <span class="svg-container">
+              <svg-icon icon-class="user" />
+            </span>
+            <el-input
+              ref="telephone"
+              v-model.trim="loginForm.telephone"
+              placeholder="请输入用户名/手机号码"
+              name="telephone"
+              type="text"
+              tabindex="1"
+              auto-complete="on"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item prop="password">
+          <div class="form-box-item">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model.trim="loginForm.password"
+              :type="passwordType"
+              placeholder="请输入密码"
+              name="password"
+              tabindex="2"
+              auto-complete="on"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </div>
+        </el-form-item>
+        <div class="foot-button">
+          <el-button @click.native.prevent="resetForm">重 置</el-button>
+          <el-button :loading="loading" type="primary" @click.native.prevent="handleLogin">登 录</el-button>
+        </div>
+        <div class="register">
+          <el-button type="text" @click="register">注 册</el-button>
+          <el-button type="text" @click="resetpassword">忘记密码</el-button>
+        </div>
+      </el-form>
+    </div>
+    <background />
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
+import { loginRules } from "@/utils/validate/index.js"
+import background from "./background.vue"
 export default {
-  name: 'Login',
+  name: "Login",
+  components: { background },
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
-    }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        telephone: "18888888888",
+        password: "111111",
       },
-      loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
-      },
+      loginRules,
       loading: false,
-      passwordType: 'password',
-      redirect: undefined
+      passwordType: "password",
+      redirect: undefined,
     }
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+      if (this.passwordType === "password") {
+        this.passwordType = ""
       } else {
-        this.passwordType = 'password'
+        this.passwordType = "password"
       }
       this.$nextTick(() => {
         this.$refs.password.focus()
       })
     },
+    resetForm() {
+      this.$refs.loginForm.resetFields()
+    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
+          this.$store
+            .dispatch("user/login", this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || "/" })
+            })
+            .catch(() => {})
+            .finally(() => {
+              this.loading = false
+            })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
-    }
-  }
+    },
+    register() {
+      this.$router.push("/register")
+    },
+    resetpassword() {
+      this.$message.warning("待开发！")
+    },
+  },
 }
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
-
-@supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
-    color: $cursor;
-  }
-}
-
-/* reset element-ui css */
-.login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      caret-color: $cursor;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
-      }
-    }
-  }
-
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
-}
-</style>
-
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg-f: #fff;
+$dark_gray: #889aa4;
+$light_gray: #ddd;
 
 .login-container {
-  min-height: 100%;
-  width: 100%;
-  background-color: $bg;
-  overflow: hidden;
+  background-color: #409eff;
+  height: 100%;
+}
 
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
+.login-box {
+  width: 450px;
+  height: 300px;
+  background-color: $bg-f;
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  border-radius: 5px;
+  transform: translate(-50%, -50%);
+  .manage_tip {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: -150px;
+    font-size: 34px;
+    color: $bg-f;
+  }
+  .avatar_box {
+    height: 130px;
+    width: 130px;
+    border: 1px solid $light_gray;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 0 10px $light_gray;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  ::v-deep .el-form-item__error {
+    // 表单提示信息的位置
+    margin-left: 30px;
   }
 
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
+  .form-box {
+    position: absolute;
+    bottom: 0;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+    &-item {
+      display: flex;
+      .svg-container {
+        color: $dark_gray;
+        vertical-align: middle;
+        width: 30px;
+        display: inline-block;
+      }
+      .show-pwd {
+        position: absolute;
+        right: 10px;
+        font-size: 16px;
+        color: $dark_gray;
+        cursor: pointer;
+        user-select: none;
       }
     }
-  }
-
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
+    .foot-button {
+      width: 100%;
+      margin-bottom: 30px;
       text-align: center;
-      font-weight: bold;
     }
-  }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
+    .register {
+      text-align: right;
+    }
   }
 }
 </style>

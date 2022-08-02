@@ -81,6 +81,34 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/articleCenters',
+    component: Layout,
+    redirect: '/articleCenters/category',
+    name: 'Article',
+    meta: { title: '文章中心', icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'category',
+        name: 'category',
+        component: () => import('@/views/articleCenters/category/index'),
+        meta: { title: '创建分类', icon: 'tree' }
+      },
+      {
+        path: 'tags',
+        name: 'tags',
+        component: () => import('@/views/articleCenters/tags/index'),
+        meta: { title: '创建标签', icon: 'tree' }
+      },
+      {
+        path: 'article',
+        name: 'article',
+        component: () => import('@/views/articleCenters/article/index'),
+        meta: { title: '创建文章', icon: 'table' }
+      },
+
+    ]
+  },
 
   // {
   //   path: '/form',

@@ -12,13 +12,17 @@ module.exports = {
   extends: ['plugin:vue/recommended', 'eslint:recommended'],
   // eslint的校验规则，可以根据项目的需要自行增删
   rules: {
-    "vue/max-attributes-per-line": [2, {
-      "singleline": 5,
+    "vue/max-attributes-per-line": [0, {
+      "singleline": 10,
       "multiline": {
         "max": 1,
         "allowFirstLine": false
       }
     }],
+    // "vue/html-closing-bracket-newline": ["error", {
+    //   "singleline": "never",
+    //   "multiline": "never"
+    // }],
     "vue/html-self-closing": ["error", {
       "html": {
         "void": "always",

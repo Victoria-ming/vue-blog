@@ -185,7 +185,7 @@ $light_gray: #ddd;
   .form-box {
     position: absolute;
     bottom: 0;
-    padding: 0 20px;
+    padding: 0 30px;
     width: 100%;
     box-sizing: border-box;
     &-item {
